@@ -21,7 +21,7 @@ func main()  {
 	err = channel.Publish("", queue.Name, false, false,
 		amqp.Publishing{
 			ContentType:"text/plain",
-			Body:[]byte("test002"),
+			Body:[]byte("test003"),
 		},
 	)
 	if err != nil {
