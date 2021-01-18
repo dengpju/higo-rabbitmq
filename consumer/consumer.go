@@ -7,7 +7,7 @@ import (
 )
 
 func main()  {
-	client :=rabbitmq.New()
+	client :=rabbitmq.New(rabbitmq.Host("192.168.8.99"))
 	defer client.Close()
 	channel, err := client.Conn.Channel()
 	if err != nil {

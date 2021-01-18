@@ -7,7 +7,7 @@ import (
 )
 
 func main()  {
-	client :=rabbitmq.New()
+	client :=rabbitmq.New(rabbitmq.Host("192.168.8.99"))
 	defer client.Close()
 	channel, err := client.Conn.Channel()
 	if err != nil {
@@ -21,11 +21,12 @@ func main()  {
 	err = channel.Publish("", queue.Name, false, false,
 		amqp.Publishing{
 			ContentType:"text/plain",
-			Body:[]byte("test003"),
+			Body:[]byte("test005"),
 		},
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println("发送消息成功")
+	rabbitmq.Send("usertest", "000001")
 }
