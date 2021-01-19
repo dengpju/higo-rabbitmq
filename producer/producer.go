@@ -28,5 +28,9 @@ func main()  {
 		log.Fatal(err)
 	}
 	log.Println("发送消息成功")
-	rabbitmq.Send("usertest", "000001")
+	rabbitmq.Mq(rabbitmq.NewQueues().Append(rabbitmq.Queue("usertest"),
+		rabbitmq.Queue("usertestuion")),
+		rabbitmq.Exchange("UserExchange", "direct"),
+		"userreg",
+	).Message("gggggg").Message("kekekek").Message("hhhh").Send()
 }
