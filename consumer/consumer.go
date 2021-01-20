@@ -3,12 +3,13 @@ package main
 import (
 	"fmt"
 	"github.com/dengpju/higo-rabbitmq/rabbitmq"
-	"log"
+	"github.com/streadway/amqp"
 )
 
 func main()  {
 	client :=rabbitmq.New(rabbitmq.Host("192.168.8.99"))
 	defer client.Close()
+	/**
 	channel, err := client.Conn.Channel()
 	if err != nil {
 		log.Fatal(err)
@@ -23,4 +24,16 @@ func main()  {
 		fmt.Println(msg.DeliveryTag, string(msg.Body))
 	}
 
+	 */
+	rabbitmq.Consumer("usertest", "userreg", SendMail)
+
+}
+
+func SendMail(msgs <-chan amqp.Delivery)  {
+	for msg := range msgs {
+		{
+			fmt.Println(msg.DeliveryTag, string(msg.Body))
+		}
+		msg.Ack(false) // 确认机制，如果不确认，服务停掉后，消息会从Unacked回到Ready中被其他消费者获取
+	}
 }

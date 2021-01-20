@@ -2,13 +2,13 @@ package main
 
 import (
 	"github.com/dengpju/higo-rabbitmq/rabbitmq"
-	"github.com/streadway/amqp"
 	"log"
 )
 
 func main()  {
 	client :=rabbitmq.New(rabbitmq.Host("192.168.8.99"))
 	defer client.Close()
+	/**
 	channel, err := client.Conn.Channel()
 	if err != nil {
 		log.Fatal(err)
@@ -28,9 +28,12 @@ func main()  {
 		log.Fatal(err)
 	}
 	log.Println("发送消息成功")
+	 */
+
 	rabbitmq.Mq(rabbitmq.NewQueues().Append(rabbitmq.Queue("usertest"),
 		rabbitmq.Queue("usertestuion")),
 		rabbitmq.Exchange("UserExchange", "direct"),
 		"userreg",
-	).Message("gggggg").Message("kekekek").Message("hhhh").Send()
+	).Message("gggggg4").Message("kekekek5").Message("hhhh6").Send()
+	log.Println("发送消息成功")
 }
