@@ -9,7 +9,7 @@ type mq struct {
 	channel  *amqp.Channel
 	exchange *exchange
 	key      string //路由键
-	message  []string
+	message  []amqp.Publishing
 }
 
 type Queues []*queue
@@ -65,7 +65,7 @@ func Mq(queues Queues, exchange *exchange, key string) *mq {
 	return &mq{channel: channel, exchange: exchange, key: key}
 }
 
-func (this *mq) Message(context string) *mq {
+func (this *mq) Message(context amqp.Publishing) *mq {
 	this.message = append(this.message, context)
 	return this
 }
@@ -75,10 +75,7 @@ func (this *mq) Send() (err []error) {
 	if len(this.message) > 0 {
 		for _,message :=range this.message {
 			err = append(err, this.channel.Publish(this.exchange.Name, this.key, false, false,
-				amqp.Publishing{
-					ContentType: "text/plain",
-					Body:        []byte(message),
-				},
+				message,
 			))
 		}
 	}

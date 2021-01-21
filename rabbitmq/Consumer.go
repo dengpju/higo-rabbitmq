@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func Consumer(queue string, key string, callback func(<-chan amqp.Delivery)) {
+func Consumer(queue string, key string, cname string,callback func(msgs <-chan amqp.Delivery, cname string)) {
 	channel, err := Conn.Channel()
 	if err != nil {
 		log.Fatal(err)
@@ -15,5 +15,5 @@ func Consumer(queue string, key string, callback func(<-chan amqp.Delivery)) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	callback(msgs)
+	callback(msgs, cname)
 }

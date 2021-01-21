@@ -6,34 +6,24 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func main()  {
-	client :=rabbitmq.New(rabbitmq.Host("192.168.8.99"))
+func main() {
+	client := rabbitmq.New(rabbitmq.Host("192.168.8.99"))
 	defer client.Close()
-	/**
-	channel, err := client.Conn.Channel()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer channel.Close()
-	msgs, err := channel.Consume("test","c1",false,false,false, false,nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	for msg := range msgs{
-		msg.Ack(true)// 确认机制，如果不确认，服务停掉后，消息会从Unacked回到Ready中被其他消费者获取
-		fmt.Println(msg.DeliveryTag, string(msg.Body))
-	}
 
-	 */
-	rabbitmq.Consumer("usertest", "userreg", SendMail)
+	go rabbitmq.Consumer("usertest", "userreg", "c1", SendMail)
+	//go rabbitmq.Consumer("usertest", "userreg", "c2", SendMail)
+	//go rabbitmq.Consumer("usertestuion", "userreg", "c3", SendMail)
+	//go rabbitmq.Consumer("usertestuion", "userreg", "c4", SendMail)
+	select {}
 
 }
 
-func SendMail(msgs <-chan amqp.Delivery)  {
+func SendMail(msgs <-chan amqp.Delivery, cname string) {
 	for msg := range msgs {
 		{
-			fmt.Println(msg.DeliveryTag, string(msg.Body))
+			fmt.Printf("消费者:%s 消息id:%s 消息:%s \n", cname, msg.MessageId, string(msg.Body))
 		}
-		msg.Ack(false) // 确认机制，如果不确认，服务停掉后，消息会从Unacked回到Ready中被其他消费者获取
+		_ = msg.Ack(false) // 确认机制，如果不确认，服务停掉后，消息会从Unacked回到Ready中被其他消费者获取
+		//time.Sleep(time.Second * 2)
 	}
 }
