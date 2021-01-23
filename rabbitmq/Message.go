@@ -70,6 +70,11 @@ func (this *mq) Message(context amqp.Publishing) *mq {
 	return this
 }
 
+func (this *mq) Qos(prefetchCount, prefetchSize int, global bool) *mq {
+	this.channel.Qos(prefetchCount, prefetchSize, global)
+	return this
+}
+
 func (this *mq) Send() (err []error) {
 	defer this.channel.Close()
 	if len(this.message) > 0 {

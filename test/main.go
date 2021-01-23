@@ -9,7 +9,7 @@ import (
 func main()  {
 	client := rabbitmq.New(rabbitmq.Host("192.168.8.99"))
 	defer client.Close()
-	rabbitmq.Consumer("usertest", "userreg", "c2", SendMail)
+	rabbitmq.Channel().Consumer("usertest", "userreg", "c2", SendMail)
 }
 
 func SendMail(msgs <-chan amqp.Delivery, cname string) {

@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	client := rabbitmq.New(rabbitmq.Host("192.168.8.99"))
+	client := rabbitmq.New(rabbitmq.Host("192.168.42.131"))
 	defer client.Close()
 
 	messageId := 1
@@ -18,7 +18,7 @@ func main() {
 	for {
 		rand.Seed(time.Now().Unix())
 		rabbitmq.Mq(rabbitmq.NewQueues().Append(rabbitmq.Queue("usertest"),
-			rabbitmq.Queue("usertestuion")),
+			/**rabbitmq.Queue("usertestuion")*/),
 			rabbitmq.Exchange("UserExchange", "direct"),
 			"userreg",
 		).Message(amqp.Publishing{
@@ -36,10 +36,11 @@ func main() {
 				MessageId:   fmt.Sprintf("%d",messageId + 2),
 				Body:        []byte(fmt.Sprintf("jjjjjj%d", rand.Intn(1000)+1)),
 			}).
+			Qos(1,0, false).
 			Send()
 		messageId += 3
 		log.Println("发送消息成功")
-		time.Sleep(time.Second * 3)
+		time.Sleep(time.Second * 1)
 	}
 
 }
