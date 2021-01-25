@@ -47,6 +47,7 @@ func main() {
 		mq.SetConfirm(true).NotifyReturn().SetExchange(rabbitmq.Exchange("UserExchange", "direct")).SetKey("userreg")
 		rand.Seed(time.Now().Unix())
 		mq.Context(amqp.Publishing{
+			//Headers: map[string]interface{}{"x-delay":3000},// 延迟
 			ContentType: "text/plain",
 			MessageId:   fmt.Sprintf("%d", messageId),
 			Body:        []byte(fmt.Sprintf("gggggg%d", rand.Intn(1000)+1)),

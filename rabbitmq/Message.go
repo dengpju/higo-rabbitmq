@@ -36,10 +36,11 @@ func Queue(name string) *queue {
 
 type exchange struct {
 	Name string
-	Kind string // direct、fanout、headers
+	Kind string                 // direct、fanout、headers、x-delayed-message
+	Args map[string]interface{} // {"x-delayed-message":"direct"}
 }
 
-func Exchange(name string, kind string) *exchange {
+func Exchange(name string, kind string, args ...map[string]interface{}) *exchange {
 	return &exchange{Name: name, Kind: kind}
 }
 
@@ -53,7 +54,7 @@ func Mq() *MQ {
 
 func (this *MQ) DeclareExchange(exchange *exchange) *MQ {
 	//声明交换机
-	err := this.Channel.ExchangeDeclare(exchange.Name, exchange.Kind, false, false, false, false, nil)
+	err := this.Channel.ExchangeDeclare(exchange.Name, exchange.Kind, false, false, false, false, exchange.Args)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -91,12 +92,12 @@ func (this *MQ) Qos(prefetchCount, prefetchSize int, global bool) *MQ {
 	return this
 }
 
-func (this *MQ)SetExchange(exchange *exchange) *MQ {
+func (this *MQ) SetExchange(exchange *exchange) *MQ {
 	this.Exchange = exchange
 	return this
 }
 
-func (this *MQ)SetKey(key string) *MQ {
+func (this *MQ) SetKey(key string) *MQ {
 	this.Key = key
 	return this
 }
