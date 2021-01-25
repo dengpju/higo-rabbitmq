@@ -1,7 +1,6 @@
 package rabbitmq
 
 import (
-	"fmt"
 	"github.com/streadway/amqp"
 	"log"
 )
@@ -92,6 +91,16 @@ func (this *MQ) Qos(prefetchCount, prefetchSize int, global bool) *MQ {
 	return this
 }
 
+func (this *MQ)SetExchange(exchange *exchange) *MQ {
+	this.Exchange = exchange
+	return this
+}
+
+func (this *MQ)SetKey(key string) *MQ {
+	this.Key = key
+	return this
+}
+
 func (this *MQ) SetConfirm(b bool) *MQ {
 	err := this.Channel.Confirm(false)
 	if err != nil {
@@ -131,7 +140,6 @@ func (this *MQ) Send() (err error) {
 	// mandatory:
 	//如果为true,在exchange正常且可到达的情况下。如果exchange+routeKey无法投递给queue，那么MQ会将消息返还给生产者
 	//如果为false时，则直接丢弃
-	fmt.Println(this.Message)
 	err = this.Channel.Publish(this.Exchange.Name, this.Key, true, false,
 		this.Message,
 	)

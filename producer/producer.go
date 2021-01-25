@@ -38,30 +38,23 @@ func main() {
 	//})
 	//log.Println("服务启动成功")
 	//log.Fatal(http.ListenAndServe(":8080", nil))
-
 	mq := rabbitmq.Mq().
 		DeclareExchange(rabbitmq.Exchange("UserExchange", "direct")).
 		DeclareBindQueue(rabbitmq.NewQueues().Append(rabbitmq.Queue("usertest"),
-			/**rabbitmq.Queue("usertestuion")*/), "userreg").
-		SetConfirm(true).NotifyReturn()
-	cmq := rabbitmq.Mq()
-	fmt.Printf("%p\n", mq)
-	fmt.Printf("%p\n", cmq)
+			/**rabbitmq.Queue("usertestuion")*/), "userreg")
+
 	for {
-		cmq.Channel = mq.Channel
-		cmq.Exchange = mq.Exchange
-		cmq.Key = mq.Key
-		cmq.SetConfirm(mq.Confirm).NotifyReturn()
-		fmt.Printf("%p\n", cmq)
+		mq.SetConfirm(true).NotifyReturn().SetExchange(rabbitmq.Exchange("UserExchange", "direct")).SetKey("userreg")
 		rand.Seed(time.Now().Unix())
-		cmq.Context(amqp.Publishing{
+		mq.Context(amqp.Publishing{
 			ContentType: "text/plain",
 			MessageId:   fmt.Sprintf("%d", messageId),
 			Body:        []byte(fmt.Sprintf("gggggg%d", rand.Intn(1000)+1)),
 		}).Send()
 		messageId += 1
 		log.Println("发送消息成功")
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Second * 10)
+		mq = rabbitmq.Mq()
 	}
 
 }
