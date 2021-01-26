@@ -3,6 +3,7 @@ package rabbitmq
 import (
 	"github.com/streadway/amqp"
 	"log"
+	"sync"
 )
 
 type MQ struct {
@@ -34,14 +35,57 @@ func Queue(name string) *queue {
 	return &queue{Name: name}
 }
 
+type Parameter struct {
+	Name  string
+	Value interface{}
+}
+
+type Parameters []*Parameter
+
+func (this Parameters) Find(name string) interface{} {
+	for _, p := range this {
+		if p.Name == name {
+			return p.Value
+		}
+	}
+	return nil
+}
+
+var exchangeParameter map[string]interface{}
+var messageOnce sync.Once
+
+func init() {
+	messageOnce.Do(func() {
+		exchangeParameter = make(map[string]interface{})
+	})
+}
+
+func NewParameter(name string, value interface{}) *Parameter {
+	exchangeParameter[name] = value
+	return &Parameter{Name: name, Value: value}
+}
+
+const (
+	EXCHANGE_ARGS = "exchange_args"
+)
+
 type exchange struct {
 	Name string
 	Kind string                 // direct、fanout、headers、x-delayed-message
 	Args map[string]interface{} // {"x-delayed-message":"direct"}
 }
 
-func Exchange(name string, kind string, args ...map[string]interface{}) *exchange {
-	return &exchange{Name: name, Kind: kind}
+func Exchange(name string, kind string, parameter ...*Parameter) *exchange {
+	exc := &exchange{Name: name, Kind: kind}
+	args := Parameters(parameter).Find(EXCHANGE_ARGS)
+	if nil != args {
+		exc.Args = args.(map[string]interface{})
+	}
+	return exc
+}
+
+func WithExchangeArgs(param map[string]interface{}) *Parameter {
+	return NewParameter(EXCHANGE_ARGS, param)
 }
 
 func Mq() *MQ {

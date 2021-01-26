@@ -12,7 +12,7 @@ func main() {
 	defer client.Close()
 
 	go rabbitmq.Channel().
-		Qos(1, 0, false).
+		Qos(3, 0, false).
 		Consumer("usertest", "userreg", "c1", SendMail)
 	//go rabbitmq.Consumer("usertest", "userreg", "c2", SendMail)
 	//go rabbitmq.Consumer("usertestuion", "userreg", "c3", SendMail)
