@@ -72,7 +72,7 @@ const (
 type exchange struct {
 	Name string
 	Kind string                 // direct、fanout、headers、x-delayed-message
-	Args map[string]interface{} // {"x-delayed-message":"direct"}
+	Args map[string]interface{} // {"x-delayed-type":"direct"}
 }
 
 func Exchange(name string, kind string, parameter ...*Parameter) *exchange {

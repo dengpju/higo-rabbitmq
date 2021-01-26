@@ -16,6 +16,14 @@ func main() {
 	client := rabbitmq.New(rabbitmq.Host("192.168.42.131"))
 	defer client.Close()
 
+	/**
+	insert into user_notify(user_id,update_at) values(12345, now())
+	ON DUPLICATE KEY UPDATE
+	notifynum=IF(isdone=1,notifynum,notifynum+1),
+	isdone=IF(notifynum>=5,1,0),
+	update_at=IF(isdone=1,notifynum,now())
+	 */
+
 	args := make(map[string]interface{})
 	args["x-delayed-type"] = "direct"
 
